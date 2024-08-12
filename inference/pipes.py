@@ -33,10 +33,10 @@ def create_env_from_config(config: WebArenaConfig) -> ScriptBrowserEnv:
     return env
 
 
-def get_intent_from_config_file(config_file_path: str) -> str:
-    with open(config_file_path) as f:
+def get_intent_and_task_id(config_file: str) -> tuple[str, str]:
+    with open(config_file) as f:
         _c = json.load(f)
-        intent = _c["intent"]
+        intent: str = _c["intent"]
         task_id = _c["task_id"]
         # automatically login
         if _c["storage_state"]:
@@ -60,7 +60,7 @@ def get_intent_from_config_file(config_file_path: str) -> str:
             config_file = f"{temp_dir}/{os.path.basename(config_file)}"
             with open(config_file, "w") as f:
                 json.dump(_c, f)
-    return intent
+    return intent, task_id
 
 
 def get_next_action(
@@ -74,6 +74,7 @@ def get_next_action(
     Gets next action of agent
     Creates stop action if early stop or error occurs
     """
+    action: Action
     # early stop
     if (stop_info := early_stop(
         trajectory,

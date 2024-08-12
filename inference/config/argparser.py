@@ -1,4 +1,5 @@
 from argparse import Namespace, ArgumentParser
+import time
 
 from .config import WebArenaConfig
 
@@ -115,7 +116,9 @@ def _add_example_config(parser: ArgumentParser) -> ArgumentParser:
     return parser
 
 def _add_logging_config(parser: ArgumentParser) -> ArgumentParser:
-    parser.add_argument("--result_dir", type=str, default="")
+    result_dir = f"cache/results_{time.strftime('%Y%m%d%H%M%S', time.localtime())}"
+
+    parser.add_argument("--result_dir", type=str, default=result_dir)
     return parser
 
 def _check_action_space(args: Namespace) -> None:

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from browser_env import Action, ActionTypes, Trajectory
+from browser_env.actions import is_equivalent
 
 
 def early_stop(
@@ -38,7 +39,7 @@ def _parsing_failure(trajectory: Trajectory, threshold: int) -> Optional[str]:
     Case: parsing failure for k times
     """
     k = threshold
-    last_k_actions: list[Action] = trajectory[1::2][-k:]
+    last_k_actions: list[Action] = trajectory[1::2][-k:] # type: ignore
     if len(last_k_actions) >= k\
         and all(
         [
@@ -55,8 +56,8 @@ def _repeating_action_failure(trajectory: Trajectory, threshold: int) -> Optiona
     Case: same action for k times
     """
     k = threshold
-    last_k_actions: list[Action] = trajectory[1::2][-k:]
-    action_seq: list[Action] = trajectory[1::2]
+    last_k_actions: list[Action] = trajectory[1::2][-k:] # type: ignore
+    action_seq: list[Action] = trajectory[1::2] # type: ignore
 
     if len(action_seq) == 0:
         return None
@@ -80,3 +81,5 @@ def _repeating_action_failure(trajectory: Trajectory, threshold: int) -> Optiona
             >= k
         ):
             return f"Same typing action for {k} times"
+
+    return None

@@ -21,7 +21,6 @@ from browser_env import (
     Trajectory,
     create_stop_action,
 )
-from browser_env.actions import is_equivalent
 
 from browser_env.helper_functions import (
     RenderHelper,
@@ -38,7 +37,7 @@ from inference.utils import (
 )
 from inference.pipes import (
     create_env_from_config,
-    get_intent_from_config_file,
+    get_intent_and_task_id,
     get_next_action
 )
 
@@ -86,7 +85,7 @@ def test(
             )
 
             # get intent
-            intent = get_intent_from_config_file(config_file)
+            intent, task_id = get_intent_and_task_id(config_file)
 
             logger.info(f"[Config file]: {config_file}")
             logger.info(f"[Intent]: {intent}")
@@ -97,7 +96,7 @@ def test(
 
             # init state_info, trajectory
             state_info: StateInfo = {"observation": obs, "info": info}
-            trajectory = [state_info]
+            trajectory: Trajectory = [state_info]
 
             # init metadata
             meta_data = {"action_history": ["None"]}
@@ -160,7 +159,7 @@ def test(
             else:
                 logger.info(f"[Result] (FAIL) {config_file}")
 
-            if args.save_trace_enabled:
+            if config.save_trace_enabled:
                 env.save_trace(
                     Path(result_dir) / "traces" / f"{task_id}.zip"
                 )
@@ -169,7 +168,7 @@ def test(
             logger.info(f"[OpenAI Error] {repr(e)}")
         except Exception as e:
             logger.info(f"[Unhandled Error] {repr(e)}]")
-            log_error_file(result_dir, e)
+            log_error_file(result_dir, config_file, e)
 
         render_helper.close()
 
@@ -192,8 +191,8 @@ if __name__ == "__main__":
     if len(test_file_list) > 0:
         logger.info(f"Total {len(test_file_list)} tasks left")
         config.dump()
-        agent = construct_agent(args)
-        test(args, agent, test_file_list)
+        agent = construct_agent(config.args)
+        test(config, agent, test_file_list)
 
     else:
         logger.info("No task left to run")

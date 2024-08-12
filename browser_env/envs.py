@@ -73,7 +73,6 @@ class ScriptBrowserEnv(Env[dict[str, Observation], Action]):
     and observation space is the html content of the page.
     """
 
-    @beartype
     def __init__(
         self,
         max_page_length: int = 8192,
@@ -84,7 +83,7 @@ class ScriptBrowserEnv(Env[dict[str, Observation], Action]):
         viewport_size: ViewportSize = {"width": 1280, "height": 720},
         save_trace_enabled: bool = False,
         sleep_after_execution: float = 0.0,
-    ):
+    ) -> None:
         # TODO: make Space[Action] = ActionSpace
         self.action_space = get_action_space()  # type: ignore[assignment]
         self.headless = headless

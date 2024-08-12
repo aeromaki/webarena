@@ -26,6 +26,13 @@ class WebArenaConfig:
     """
     dataclass representation of argparse Namespace for type hints
     """
+    agent: AgentConfig
+    lm: LMConfig
+    example: ExampleConfig
+    logging: LoggingConfig
+
+    args: Namespace
+
     render: bool = False
     slow_mo: int = 0
     action_set_tag: ActionSetTag = "id_accessibility_tree"
@@ -38,14 +45,14 @@ class WebArenaConfig:
     sleep_after_execution: float = 2.0
     max_steps: int = 30
 
-    agent: AgentConfig
-    lm: LMConfig
-    example: ExampleConfig
-    logging: LoggingConfig
-
     @staticmethod
     def from_args(args: Namespace) -> WebArenaConfig:
-        return AgentConfig(
+        return WebArenaConfig(
+            AgentConfig.from_args(args),
+            LMConfig.from_args(args),
+            ExampleConfig.from_args(args),
+            LoggingConfig.from_args(args),
+            args,
             args.render,
             args.slow_mo,
             args.action_set_tag,
@@ -55,11 +62,7 @@ class WebArenaConfig:
             args.viewport_height,
             args.save_trace_enabled,
             args.sleep_after_execution,
-            args.max_steps,
-            AgentConfig.from_args(args),
-            LMConfig.from_args(args),
-            ExampleConfig.from_args(args),
-            LoggingConfig.from_args(args)
+            args.max_steps
         )
 
     def dump(self) -> None:
@@ -70,6 +73,7 @@ class WebArenaConfig:
         config_file_path = Path(self.logging.result_dir) / "config.json"
 
         config_dict = asdict(self)
+        config_dict.pop("args", None)
         config_dict["agent"] = asdict(self.agent)
         config_dict["lm"] = asdict(self.lm)
         config_dict["example"] = asdict(self.example)
@@ -78,7 +82,7 @@ class WebArenaConfig:
         if not config_file_path.exists():
             with open(config_file_path, "w") as f:
                 json.dump(config_dict, f, indent=4)
-                logger.info(f"Dump config to {config_file}")
+                logger.info(f"Dump config to {config_file_path}")
 
 @dataclass(frozen=True)
 class AgentConfig:
@@ -125,8 +129,6 @@ class LMConfig:
             args.temperature,
             args.top_p,
             args.context_length,
-            args.top_p,
-            args.context_length,
             args.max_tokens,
             args.stop_token,
             args.max_retry,
@@ -157,7 +159,7 @@ class LoggingConfig:
     result_dir: str = ""
 
     @staticmethod
-    def from_args(args: Namespace) -> LMConfig:
+    def from_args(args: Namespace) -> LoggingConfig:
         return LoggingConfig(
             args.result_dir
         )

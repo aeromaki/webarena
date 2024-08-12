@@ -1,4 +1,3 @@
-import time
 from pathlib import Path
 import os
 import glob
@@ -36,7 +35,7 @@ def create_test_file_list(st_idx: int, ed_idx: int, result_dir: str) -> list[str
     return test_file_list
 
 
-def log_error_file(result_dir: str, exception: Exception) -> None:
+def log_error_file(result_dir: str, config_file: str, exception: Exception) -> None:
     import traceback
     with open(Path(result_dir) / "error.txt", "a") as f:
         f.write(f"[Config file]: {config_file}\n")
@@ -49,13 +48,8 @@ def _prepare_prompt_json() -> None:
     to_json.run()
 
 def _prepare_result_dir(result_dir: str) -> None:
-    if not result_dir:
-        result_dir = (
-            f"cache/results_{time.strftime('%Y%m%d%H%M%S', time.localtime())}"
-        )
     if not Path(result_dir).exists():
         Path(result_dir).mkdir(parents=True, exist_ok=True)
-        args.result_dir = result_dir
         logger.info(f"Create result dir: {result_dir}")
 
     if not (Path(result_dir) / "traces").exists():

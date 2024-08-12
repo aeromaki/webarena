@@ -1,0 +1,3 @@
+[[tool.mypy.overrides]]
+module = ["openai.*", "gymnasium.*", "playwright.*", "beartype.*", "aiolimiter.*", "tiktoken.*"]
+ignore_missing_imports = true
