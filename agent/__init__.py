@@ -3,6 +3,7 @@ from .agent import (
     PromptAgent,
     TeacherForcingAgent,
     construct_agent,
+    construct_agent_from_config
 )
 
-__all__ = ["Agent", "TeacherForcingAgent", "PromptAgent", "construct_agent"]
+__all__ = ["Agent", "TeacherForcingAgent", "PromptAgent", "construct_agent", "construct_agent_from_config"]

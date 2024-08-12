@@ -11,7 +11,7 @@ from agent import (
     Agent,
     PromptAgent,
     TeacherForcingAgent,
-    construct_agent,
+    construct_agent_from_config
 )
 from agent.prompts import *
 from browser_env import (
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     if len(test_file_list) > 0:
         logger.info(f"Total {len(test_file_list)} tasks left")
         config.dump()
-        agent = construct_agent(config.args)
+        agent = construct_agent_from_config(config)
         test(config, agent, test_file_list)
 
     else:

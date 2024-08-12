@@ -180,3 +180,63 @@ def construct_agent(args: argparse.Namespace) -> Agent:
             f"agent type {args.agent_type} not implemented"
         )
     return agent
+
+
+
+
+from llms.lm_config import LMConfig
+from inference.config import WebArenaConfig
+
+
+def construct_agent_from_config(config: WebArenaConfig) -> Agent:
+    llm_config = _construct_llm_config_from_config(config)
+
+    agent: Agent
+    agent_type = config.agent.agent_type
+    if agent_type == "teacher_forcing":
+        agent = TeacherForcingAgent()
+    elif agent_type == "prompt":
+        with open(config.agent.instruction_path) as f:
+            constructor_type = json.load(f)["meta_data"]["prompt_constructor"]
+        tokenizer = Tokenizer(config.lm.provider, config.lm.model)
+        prompt_constructor = eval(constructor_type)(
+            config.agent.instruction_path, lm_config=llm_config, tokenizer=tokenizer
+        )
+        agent = PromptAgent(
+            action_set_tag=config.action_set_tag,
+            lm_config=llm_config,
+            prompt_constructor=prompt_constructor,
+        )
+    else:
+        raise NotImplementedError(
+            f"agent type {agent_type} not implemented"
+        )
+    return agent
+
+
+def _construct_llm_config_from_config(config: WebArenaConfig) -> LMConfig:
+    args = config.lm
+    llm_config = LMConfig(
+        provider=args.provider, model=args.model, mode=args.mode
+    )
+    if args.provider == "openai":
+        llm_config.gen_config["temperature"] = args.temperature
+        llm_config.gen_config["top_p"] = args.top_p
+        llm_config.gen_config["context_length"] = args.context_length
+        llm_config.gen_config["max_tokens"] = args.max_tokens
+        llm_config.gen_config["stop_token"] = args.stop_token
+        llm_config.gen_config["max_obs_length"] = args.max_obs_length
+        llm_config.gen_config["max_retry"] = args.max_retry
+    elif args.provider == "huggingface":
+        llm_config.gen_config["temperature"] = args.temperature
+        llm_config.gen_config["top_p"] = args.top_p
+        llm_config.gen_config["max_new_tokens"] = args.max_tokens
+        llm_config.gen_config["stop_sequences"] = (
+            [args.stop_token] if args.stop_token else None
+        )
+        llm_config.gen_config["max_obs_length"] = args.max_obs_length
+        llm_config.gen_config["model_endpoint"] = args.model_endpoint
+        llm_config.gen_config["max_retry"] = args.max_retry
+    else:
+        raise NotImplementedError(f"provider {args.provider} not implemented")
+    return llm_config

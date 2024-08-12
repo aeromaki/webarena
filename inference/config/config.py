@@ -31,8 +31,6 @@ class WebArenaConfig:
     example: ExampleConfig
     logging: LoggingConfig
 
-    args: Namespace
-
     render: bool = False
     slow_mo: int = 0
     action_set_tag: ActionSetTag = "id_accessibility_tree"
@@ -52,7 +50,6 @@ class WebArenaConfig:
             LMConfig.from_args(args),
             ExampleConfig.from_args(args),
             LoggingConfig.from_args(args),
-            args,
             args.render,
             args.slow_mo,
             args.action_set_tag,
@@ -65,6 +62,16 @@ class WebArenaConfig:
             args.max_steps
         )
 
+    @staticmethod
+    def from_json(path: str) -> WebArenaConfig:
+        with open(path, "r") as f:
+            config_dict = json.load(f)
+        config_dict["agent"] = AgentConfig(**config_dict["agent"])
+        config_dict["lm"] = LMConfig(**config_dict["lm"])
+        config_dict["example"] = ExampleConfig(**config_dict["example"])
+        config_dict["logging"] = LoggingConfig(**config_dict["logging"])
+        return WebArenaConfig(**config_dict)
+
     def dump(self) -> None:
         """
         originally `dump_config` in run.py
@@ -73,7 +80,6 @@ class WebArenaConfig:
         config_file_path = Path(self.logging.result_dir) / "config.json"
 
         config_dict = asdict(self)
-        config_dict.pop("args", None)
         config_dict["agent"] = asdict(self.agent)
         config_dict["lm"] = asdict(self.lm)
         config_dict["example"] = asdict(self.example)
