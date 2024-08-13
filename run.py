@@ -43,6 +43,7 @@ from inference.pipes import (
 
 from typing import Optional
 
+from tqdm import tqdm
 
 
 
@@ -78,12 +79,12 @@ def test(
 
     env = create_env_from_config(config)
 
-    for config_file in config_file_list:
-        try:
-            render_helper = RenderHelper(
-                config_file, result_dir, config.action_set_tag
-            )
+    for config_file in tqdm(config_file_list):
+        render_helper = RenderHelper(
+            config_file, result_dir, config.action_set_tag
+        )
 
+        try:
             # get intent
             intent, task_id = get_intent_and_task_id(config_file)
 
@@ -93,6 +94,7 @@ def test(
             # reset
             agent.reset(config_file)
             obs, info = env.reset(options={"config_file": config_file})
+            logger.info("reset")
 
             # init state_info, trajectory
             state_info: StateInfo = {"observation": obs, "info": info}
@@ -110,6 +112,7 @@ def test(
                     intent,
                     meta_data
                 )
+                logger.info("got new action")
 
                 # update trajectory
                 trajectory.append(action)
@@ -123,6 +126,7 @@ def test(
                     if isinstance(agent, PromptAgent)
                     else None,
                 )
+                logger.info("got description about new action")
 
                 render_helper.render(
                     action, state_info, meta_data, config.render_screenshot

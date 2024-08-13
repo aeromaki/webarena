@@ -3,4 +3,4 @@
 # prepare the evaluation
 # re-validate login information
 mkdir -p ./.auth
-python browser_env/auto_login.py
+python -m browser_env.auto_login

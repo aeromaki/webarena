@@ -1,13 +1,13 @@
 # websites domain
-import os
+from utils import load_env
 
-REDDIT = os.environ.get("REDDIT", "")
-SHOPPING = os.environ.get("SHOPPING", "")
-SHOPPING_ADMIN = os.environ.get("SHOPPING_ADMIN", "")
-GITLAB = os.environ.get("GITLAB", "")
-WIKIPEDIA = os.environ.get("WIKIPEDIA", "")
-MAP = os.environ.get("MAP", "")
-HOMEPAGE = os.environ.get("HOMEPAGE", "")
+REDDIT = load_env("REDDIT")
+SHOPPING = load_env("SHOPPING")
+SHOPPING_ADMIN = load_env("SHOPPING_ADMIN")
+GITLAB = load_env("GITLAB")
+WIKIPEDIA = load_env("WIKIPEDIA")
+MAP = load_env("MAP")
+HOMEPAGE = load_env("HOMEPAGE")
 
 assert (
     REDDIT

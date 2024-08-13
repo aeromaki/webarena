@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
-from typing import Literal
+from typing import Literal, Optional
 from argparse import Namespace
 
 from pathlib import Path
@@ -46,7 +46,7 @@ class WebArenaConfig:
     @staticmethod
     def from_args(args: Namespace) -> WebArenaConfig:
         if args.preset is not None:
-            return WebArenaConfig.from_json(args.preset)
+            return WebArenaConfig.from_json(args.preset, args.result_dir)
         else:
             return WebArenaConfig(
                 AgentConfig.from_args(args),
@@ -66,9 +66,11 @@ class WebArenaConfig:
             )
 
     @staticmethod
-    def from_json(path: str) -> WebArenaConfig:
+    def from_json(path: str, result_dir: str) -> WebArenaConfig:
         with open(path, "r") as f:
             config_dict = json.load(f)
+            if "result_dir" not in config_dict["logging"]:
+                config_dict["logging"]["result_dir"] = result_dir
         config_dict["agent"] = AgentConfig(**config_dict["agent"])
         config_dict["lm"] = LMConfig(**config_dict["lm"])
         config_dict["example"] = ExampleConfig(**config_dict["example"])

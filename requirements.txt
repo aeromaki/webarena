@@ -6,8 +6,10 @@ openai==0.27.0
 types-tqdm
 tiktoken
 aiolimiter
-beartype==0.12.0
+beartype
 flask
 nltk
 text-generation
 transformers==4.33.2
+python-dotenv
+tqdm

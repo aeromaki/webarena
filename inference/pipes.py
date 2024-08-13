@@ -47,7 +47,8 @@ def get_intent_and_task_id(config_file: str) -> tuple[str, str]:
             subprocess.run(
                 [
                     "python",
-                    "browser_env/auto_login.py",
+                    "-m",
+                    "browser_env.auto_login",
                     "--auth_folder",
                     temp_dir,
                     "--site_list",
