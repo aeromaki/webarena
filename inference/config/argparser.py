@@ -25,6 +25,9 @@ def _get_args() -> Namespace:
     parser = _add_example_config(parser)
     parser = _add_logging_config(parser)
 
+    # preset
+    parser.add_argument("-p", "--preset", type=str, help="config json")
+
     args = parser.parse_args()
     _check_action_space(args)
     return args

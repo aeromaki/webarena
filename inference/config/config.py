@@ -45,22 +45,25 @@ class WebArenaConfig:
 
     @staticmethod
     def from_args(args: Namespace) -> WebArenaConfig:
-        return WebArenaConfig(
-            AgentConfig.from_args(args),
-            LMConfig.from_args(args),
-            ExampleConfig.from_args(args),
-            LoggingConfig.from_args(args),
-            args.render,
-            args.slow_mo,
-            args.action_set_tag,
-            args.observation_type,
-            args.current_viewport_only,
-            args.viewport_width,
-            args.viewport_height,
-            args.save_trace_enabled,
-            args.sleep_after_execution,
-            args.max_steps
-        )
+        if args.preset is not None:
+            return WebArenaConfig.from_json(args.preset)
+        else:
+            return WebArenaConfig(
+                AgentConfig.from_args(args),
+                LMConfig.from_args(args),
+                ExampleConfig.from_args(args),
+                LoggingConfig.from_args(args),
+                args.render,
+                args.slow_mo,
+                args.action_set_tag,
+                args.observation_type,
+                args.current_viewport_only,
+                args.viewport_width,
+                args.viewport_height,
+                args.save_trace_enabled,
+                args.sleep_after_execution,
+                args.max_steps
+            )
 
     @staticmethod
     def from_json(path: str) -> WebArenaConfig:
